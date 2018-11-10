@@ -8,7 +8,190 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-plot(cars)
+library(quantmod)
+library(ggplot2)
+
+start <- as.Date("2000-01-01")
+end <- as.Date("2018-09-01")
+
+getSymbols("AAPL", src = "yahoo", from = start, to = end, periodicity = "monthly")
+getSymbols("MSFT", src = "yahoo", from = start, to = end, periodicity = "monthly")
+
+AAPL=data.frame(AAPL$AAPL.Close)
+MSFT=data.frame(MSFT$MSFT.Close)
+
+
+finance=function(x, return =c("yes", "no"), graph = c("type 1", "type 2"), norm = c("yes", "no")){
+  if (x=="MSFT"){
+    if (return=="yes"){
+      retorno=data.frame(diff(log(MSFT$MSFT.Close),k=1))
+      colnames(retorno)[1] = "Retorno log"
+      print(retorno)
+      if (graph=="type 1"){
+  graph2=ggplot(retorno, aes(x=1:nrow(retorno), y=retorno$`Retorno log`)) + geom_line()
+plot(graph2)
+}
+      else {
+        retornoac=data.frame(cumsum(retorno$`Retorno log`))
+colnames(retornoac)[1] = "Retorno acum. log"
+print(retornoac)
+graph4=ggplot(retornoac, aes(x=1:nrow(retornoac), y=retornoac$`Retorno acum. log`)) + geom_line()
+plot(graph4)
+      }
+skk=matrix(NA,nrow = length(retorno$`Retorno log`) ,ncol = 3)
+s=sum(retorno$`Retorno log`[!is.na(retorno$`Retorno log`)])
+n=length(retorno$`Retorno log`[!is.na(retorno$`Retorno log`)])
+m=s/n
+for (j in 1:3) {
+for (i in 1:length(retorno$`Retorno log`)) {
+  skk[i,j]=(retorno$`Retorno log`[i]-m)^(j+1)
+}
+}
+skk=data.frame(skk)
+s1=sum(skk$X1[!is.na(skk$X1)])
+s2=sum(skk$X2[!is.na(skk$X2)])
+s3=sum(skk$X3[!is.na(skk$X3)])
+skewness=((1/n)*s2)/(((1/n)*s1)^(3/2))
+kurtosis=((1/n)*s3)/(((1/n)*s1)^2)
+JB=n*(((skewness^2)/6)+(((kurtosis-3)^2)/24))
+if (norm=="yes"){
+     print(paste("JB =", JB))
+  }
+  else{
+    print(paste("norm=NO"))
+  }
+  
+}
+      else {
+        retorno=data.frame(diff(MSFT$MSFT.Close,k=1)/lag(MSFT$MSFT.Close,k=1))
+  colnames(retorno)[1] = "Retorno niv"
+  print(retorno)
+  if (graph=="type 1"){
+    graph1=ggplot(retorno, aes(x=1:nrow(retorno), y=retorno$`Retorno niv`)) + geom_line()
+plot(graph1)
+}
+      else {
+        retornoac=data.frame(cumsum(retorno$`Retorno niv`))
+colnames(retornoac)[1] = "Retorno acum. niv"
+print(retornoac)
+graph3=ggplot(retornoac, aes(x=1:nrow(retornoac), y=retornoac$`Retorno acum. niv`)) + geom_line()
+plot(graph3)
+      }
+  skk=matrix(NA,nrow = length(retorno$`Retorno niv`) ,ncol = 3)
+s=sum(retorno$`Retorno niv`[!is.na(retorno$`Retorno niv`)])
+n=length(retorno$`Retorno niv`[!is.na(retorno$`Retorno niv`)])
+m=s/n
+for (j in 1:3) {
+for (i in 1:length(retorno$`Retorno niv`)) {
+  skk[i,j]=(retorno$`Retorno niv`[i]-m)^(j+1)
+}
+}
+skk=data.frame(skk)
+s1=sum(skk$X1[!is.na(skk$X1)])
+s2=sum(skk$X2[!is.na(skk$X2)])
+s3=sum(skk$X3[!is.na(skk$X3)])
+skewness=((1/n)*s2)/(((1/n)*s1)^(3/2))
+kurtosis=((1/n)*s3)/(((1/n)*s1)^2)
+JB=n*(((skewness^2)/6)+(((kurtosis-3)^2)/24))
+if (norm=="yes"){
+     print(paste("JB =", JB))
+  }
+  else{
+    print(paste("norm=NO"))
+  }
+      }
+  }
+  else{
+    if (return=="yes"){
+      retorno=data.frame(diff(log(AAPL$AAPL.Close),k=1))
+      colnames(retorno)[1] = "Retorno log"
+      print(retorno)
+      if (graph=="type 1"){
+  graph2=ggplot(retorno, aes(x=1:nrow(retorno), y=retorno$`Retorno log`)) + geom_line()
+plot(graph2)
+}
+      else {
+        retornoac=data.frame(cumsum(retorno$`Retorno log`))
+colnames(retornoac)[1] = "Retorno acum. log"
+print(retornoac)
+graph4=ggplot(retornoac, aes(x=1:nrow(retornoac), y=retornoac$`Retorno acum. log`)) + geom_line()
+plot(graph4)
+      }
+skk=matrix(NA,nrow = length(retorno$`Retorno log`) ,ncol = 3)
+s=sum(retorno$`Retorno log`[!is.na(retorno$`Retorno log`)])
+n=length(retorno$`Retorno log`[!is.na(retorno$`Retorno log`)])
+m=s/n
+for (j in 1:3) {
+for (i in 1:length(retorno$`Retorno log`)) {
+  skk[i,j]=(retorno$`Retorno log`[i]-m)^(j+1)
+}
+}
+skk=data.frame(skk)
+s1=sum(skk$X1[!is.na(skk$X1)])
+s2=sum(skk$X2[!is.na(skk$X2)])
+s3=sum(skk$X3[!is.na(skk$X3)])
+skewness=((1/n)*s2)/(((1/n)*s1)^(3/2))
+kurtosis=((1/n)*s3)/(((1/n)*s1)^2)
+JB=n*(((skewness^2)/6)+(((kurtosis-3)^2)/24))
+if (norm=="yes"){
+     print(paste("JB =", JB))
+  }
+  else{
+    print(paste("norm=NO"))
+  }
+    }
+      else {
+        retorno=data.frame(diff(AAPL$AAPL.Close,k=1)/lag(AAPL$AAPL.Close,k=1))
+  colnames(retorno)[1] = "Retorno niv"
+  print(retorno)
+  if (graph=="type 1"){
+    graph1=ggplot(retorno, aes(x=1:nrow(retorno), y=retorno$`Retorno niv`)) + geom_line()
+plot(graph1)
+}
+      else {
+        retornoac=data.frame(cumsum(retorno$`Retorno niv`))
+colnames(retornoac)[1] = "Retorno acum. niv"
+print(retornoac)
+graph3=ggplot(retornoac, aes(x=1:nrow(retornoac), y=retornoac$`Retorno acum. niv`)) + geom_line()
+plot(graph3)
+      }
+  skk=matrix(NA,nrow = length(retorno$`Retorno niv`) ,ncol = 3)
+s=sum(retorno$`Retorno niv`[!is.na(retorno$`Retorno niv`)])
+n=length(retorno$`Retorno niv`[!is.na(retorno$`Retorno niv`)])
+m=s/n
+for (j in 1:3) {
+for (i in 1:length(retorno$`Retorno niv`)) {
+  skk[i,j]=(retorno$`Retorno niv`[i]-m)^(j+1)
+}
+}
+skk=data.frame(skk)
+s1=sum(skk$X1[!is.na(skk$X1)])
+s2=sum(skk$X2[!is.na(skk$X2)])
+s3=sum(skk$X3[!is.na(skk$X3)])
+skewness=((1/n)*s2)/(((1/n)*s1)^(3/2))
+kurtosis=((1/n)*s3)/(((1/n)*s1)^2)
+JB=n*(((skewness^2)/6)+(((kurtosis-3)^2)/24))
+if (norm=="yes"){
+     print(paste("JB =", JB))
+  }
+  else{
+    print(paste("norm=NO"))
+  }
+  }
+      }
+} 
+
+
+finance("AAPL", return = "yes", graph = "type 2", norm = "yes")
+
+
+
+
+
+
+
+
+
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
